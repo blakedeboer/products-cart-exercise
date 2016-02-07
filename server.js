@@ -2,7 +2,11 @@
 
 var http = require('http'),
 		url = require('url'),
-		fs = require('fs');
+		fs = require('fs'),		
+		jade = require('jade');
+
+var jsFunctionString = jade.compileFileClient('template.jade', {name: "jadeTemplate"});
+fs.writeFileSync("template.js", jsFunctionString);
 
 function onRequest (request, response) {
 	var pathname = url.parse(request.url).pathname;

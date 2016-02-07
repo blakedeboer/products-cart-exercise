@@ -21,11 +21,15 @@ httpRequest.onreadystatechange = function (value) {
   var response = JSON.parse(httpRequest.responseText);
 
   if (isLoaded) {
-  	for (var i = 0; i < response.length; i++) {
-  		var div = document.createElement("div");
-  		div.textContent = response[i].name;
-  		document.body.insertBefore(div, text);
-  	}
+      locals = {
+        products: response
+      };
+
+      var html = window.jadeTemplate(locals);
+      var productsContainer = document.getElementById("products-container");
+      productsContainer.innerHTML = html;
+      console.log("HTML added");
+  
   } else {
   	//subsribeToWindowLoad();
   }
