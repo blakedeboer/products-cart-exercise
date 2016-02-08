@@ -43,7 +43,8 @@ function getProducts () {
       for (var i = 0; i < buyButtons.length; i++) {
         buyButtons[i].addEventListener("click", function (e) {
           e.preventDefault();
-          postToMiniCart();
+          var productObj = getProductObj(this.id);
+          postToMiniCart(productObj);
         });
       }
 
@@ -87,6 +88,13 @@ function deleteProductFromMinicart (deleteId) {
     console.log(response.statusText);
     getMinicart();
   });
+}
+
+function getProductObj (id) {
+  if (typeof id === "string") id = parseInt(id);
+  for (var i = 0; i < products.length; i++) {
+    if (products[i].id === id) return products[i];
+  }
 }
 
 function loadPageContent () {
