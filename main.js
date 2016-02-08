@@ -1,49 +1,72 @@
 var isLoaded = false;
+    products = [];
 
 window.onload = function () {
 	isLoaded = true;
   //notifyOnloadEvent();
 };
 
-var httpRequest = new XMLHttpRequest();
+function sendMessage (requestType, url, statusCode, sendObj, callback) {
+  //insert repeated code from all the functions below to make code DRY, 
+  //upon success message, call the callback and pass it the response or responseText
+  var httpRequest = new XMLHttpRequest();
 
-httpRequest.onreadystatechange = function (value) {
-	if (httpRequest.readyState !== XMLHttpRequest.DONE) {
+  httpRequest.onreadystatechange = function () {
+    if (httpRequest.readyState !== XMLHttpRequest.DONE) {
       return;
-  }
-  if (httpRequest.status !== 200) {
-      return;
-  }
+    }
+    if (httpRequest.status !== statusCode) {
+        return;
+    }
+    callback(httpRequest);
+  };
 
-  console.log(httpRequest.responseText);
+  httpRequest.open(requestType, url, true);
+  httpRequest.setRequestHeader('Content-Type', 'application/json');
 
-  //TODO check for parsing errors
-  var response = JSON.parse(httpRequest.responseText);
+  httpRequest.send(sendObj);
+}
 
-  if (isLoaded) {
-      locals = {
-        products: response
-      };
+function getProducts () {
+  sendMessage('GET', 'http://localhost:3000/products', 200, null, function (response) {
+    //TODO check for parsing errors
 
-      var html = window.jadeTemplate(locals);
+    if (isLoaded) {
+      products = JSON.parse(response.responseText);
+
+      var html = window.jadeTemplate({productsArray: products});
       var productsContainer = document.getElementById("products-container");
       productsContainer.innerHTML = html;
-      console.log("HTML added");
 
       var buyButtons = document.getElementsByClassName("buy-button");
       for (var i = 0; i < buyButtons.length; i++) {
         buyButtons[i].addEventListener("click", function (e) {
           e.preventDefault();
-          console.log("click");
+          postToMiniCart();
         });
       }
-  
-  } else {
-  	//subsribeToWindowLoad();
-  }
+
+    } else {
+      //subscribeToWindowLoad();
+    }
+  });
 }
 
-httpRequest.open('GET', 'http://localhost:3000/products', true);
+function postToMiniCart () {
+  var sendObj = JSON.stringify({name: "product name"});
 
-httpRequest.send();
+  sendMessage('POST', 'http://localhost:3000/cart_order', 201, sendObj, function (response) {
+    console.log(response.responseText);
+  });
+}
+
+function loadPageContent () {
+  getProducts();
+}
+
+loadPageContent();
+
+
+
+
 
