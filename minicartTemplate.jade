@@ -2,7 +2,7 @@ header(id="cart-header")
 	div(id="cart-title")
 		span(id="cart-title")= "CART"
 	div(id="cart-count")
-		span(id="cart-count")= "2"
+		span(id="cart-count")= productCount
 
 - var arr = cartProducts
 
@@ -18,4 +18,4 @@ ul(id="cart-list")
 
 div(id="total-cost-container")
 	span(id="total-title")= "Total: "
-	span(id="total-amount")= "$2,000.00"
+	span(id="total-amount")= cartTotal

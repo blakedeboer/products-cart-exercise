@@ -33,7 +33,9 @@ function getProducts () {
     //TODO check for parsing errors
 
     if (isLoaded) {
-      products = JSON.parse(response.responseText);
+      var responseArray = JSON.parse(response.responseText);
+
+      products = appendPriceInteger(responseArray);
 
       var html = window.productsTemplate({productsArray: products});
       var productsContainer = document.getElementById("products-container");
@@ -67,7 +69,16 @@ function getMinicart () {
   sendMessage('GET', 'http://localhost:3000/cart_order', 200, null, function (response) {
     var responseText = JSON.parse(response.responseText);
 
-    var minicartHTML = window.minicartTemplate({cartProducts: responseText});
+    var cartTotal = 0;
+    for (var i = 0; i < responseText.length; i++) {
+      cartTotal += +responseText[i].product.priceInt;
+    }
+
+    var minicartHTML = window.minicartTemplate({
+      cartTotal: cartTotal,
+      productCount: responseText.length,
+      cartProducts: responseText
+    });
     var minicartContainer = document.getElementById("minicart-container");
     minicartContainer.innerHTML = minicartHTML;
 
@@ -95,6 +106,16 @@ function getProductObj (id) {
   for (var i = 0; i < products.length; i++) {
     if (products[i].id === id) return products[i];
   }
+}
+
+function appendPriceInteger (productsArray) {
+  for (var i = 0; i < productsArray.length; i++) {
+    var price = productsArray[i].price;
+    if (price.indexOf("$") === 0) {
+      productsArray[i].priceInt = +price.substring(1);  //"$100" -> 100, create new priceInt property as integer and no "$" prefix
+    }     
+  }
+  return productsArray;
 }
 
 function loadPageContent () {
