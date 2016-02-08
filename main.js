@@ -58,23 +58,40 @@ function postToMiniCart () {
 
   sendMessage('POST', 'http://localhost:3000/cart_order', 201, sendObj, function (response) {
     console.log(response.responseText);
-    getMiniCart();
+    getMinicart();
   });
 }
 
-function getMiniCart () {
+function getMinicart () {
   sendMessage('GET', 'http://localhost:3000/cart_order', 200, null, function (response) {
     var responseText = JSON.parse(response.responseText);
 
     var minicartHTML = window.minicartTemplate({cartProducts: responseText});
     var minicartContainer = document.getElementById("minicart-container");
     minicartContainer.innerHTML = minicartHTML;
+
+    var cancelButtons = document.getElementsByClassName("cancel-button");
+    for (var i = 0; i < cancelButtons.length; i++) {
+      cancelButtons[i].addEventListener("click", function (e) {
+        e.preventDefault();
+        deleteProductFromMinicart(this.id);
+      });
+    }
+  });
+}
+
+function deleteProductFromMinicart (deleteId) {
+  //need to make a function that does these same basic steps for creating a request
+  var url = 'http://localhost:3000/cart_order/' + deleteId.toString();
+  sendMessage('DELETE', url, 200, null, function (response) {
+    console.log(response.statusText);
+    getMinicart();
   });
 }
 
 function loadPageContent () {
   getProducts();
-  getMiniCart();
+  getMinicart();
 }
 
 

@@ -19,7 +19,7 @@ var arr = cartProducts
 buf.push("<ul>");
 for (var i = 0; i < arr.length; i++)
 {
-buf.push("<li><span>" + (jade.escape(null == (jade_interp = arr[i].name) ? "" : jade_interp)) + "</span></li>");
+buf.push("<li><span>" + (jade.escape(null == (jade_interp = arr[i].name) ? "" : jade_interp)) + "</span><button" + (jade.attr("id", arr[i].id, true, false)) + " class=\"cancel-button\">CANCEL</button></li>");
 }
 buf.push("</ul>");}.call(this,"cartProducts" in locals_for_with?locals_for_with.cartProducts:typeof cartProducts!=="undefined"?cartProducts:undefined));;return buf.join("");
 }

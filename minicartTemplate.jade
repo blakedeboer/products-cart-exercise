@@ -4,3 +4,5 @@ ul
 	- for (var i = 0; i < arr.length; i++)
 		li
 			span= arr[i].name
+			button(id=arr[i].id, class="cancel-button")
+				|CANCEL
