@@ -6,13 +6,13 @@ var http = require('http'),
 		jade = require('jade');
 
 //compile Jade templates to javascript functions
-var productsTemplateFn = jade.compileFileClient('productsTemplate.jade', {name: "productsTemplate"});
-var jadeMinicartTemplateFn = jade.compileFileClient('minicartTemplate.jade', {name: "minicartTemplate"});
+var productsTemplateFn = jade.compileFileClient('templates/productsTemplate.jade', {name: "productsTemplate"});
+var jadeMinicartTemplateFn = jade.compileFileClient('templates/minicartTemplate.jade', {name: "minicartTemplate"});
 
 //create template.js file to store the Jade templates
-fs.writeFile("template.js", productsTemplateFn, function () {
+fs.writeFile("templates/template.js", productsTemplateFn, function () {
 	//once the products function is written, append the minicart function to the same file
-	fs.appendFile("template.js", jadeMinicartTemplateFn);
+	fs.appendFile("templates/template.js", jadeMinicartTemplateFn);
 });
 
 //set up function to handle http requests and response for logging activity and errors
