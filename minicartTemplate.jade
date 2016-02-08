@@ -1,1 +1,6 @@
-p= "MINICART"
+- var arr = cartProducts
+
+ul
+	- for (var i = 0; i < arr.length; i++)
+		li
+			span= arr[i].name

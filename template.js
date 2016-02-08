@@ -14,6 +14,12 @@ buf.push("</ul>");}.call(this,"productsArray" in locals_for_with?locals_for_with
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<p>" + (jade.escape(null == (jade_interp = "MINICART") ? "" : jade_interp)) + "</p>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (cartProducts) {
+var arr = cartProducts
+buf.push("<ul>");
+for (var i = 0; i < arr.length; i++)
+{
+buf.push("<li><span>" + (jade.escape(null == (jade_interp = arr[i].name) ? "" : jade_interp)) + "</span></li>");
+}
+buf.push("</ul>");}.call(this,"cartProducts" in locals_for_with?locals_for_with.cartProducts:typeof cartProducts!=="undefined"?cartProducts:undefined));;return buf.join("");
 }

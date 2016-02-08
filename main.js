@@ -58,13 +58,18 @@ function postToMiniCart () {
 
   sendMessage('POST', 'http://localhost:3000/cart_order', 201, sendObj, function (response) {
     console.log(response.responseText);
+    getMiniCart();
   });
 }
 
 function getMiniCart () {
-  var minicartHTML = window.minicartTemplate();
-  var minicartContainer = document.getElementById("minicart-container");
-  minicartContainer.innerHTML = minicartHTML;
+  sendMessage('GET', 'http://localhost:3000/cart_order', 200, null, function (response) {
+    var responseText = JSON.parse(response.responseText);
+
+    var minicartHTML = window.minicartTemplate({cartProducts: responseText});
+    var minicartContainer = document.getElementById("minicart-container");
+    minicartContainer.innerHTML = minicartHTML;
+  });
 }
 
 function loadPageContent () {
