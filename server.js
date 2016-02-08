@@ -5,9 +5,17 @@ var http = require('http'),
 		fs = require('fs'),		
 		jade = require('jade');
 
-var jsFunctionString = jade.compileFileClient('template.jade', {name: "jadeTemplate"});
-fs.writeFileSync("template.js", jsFunctionString);
+//compile Jade templates to javascript functions
+var productsTemplateFn = jade.compileFileClient('productsTemplate.jade', {name: "productsTemplate"});
+var jadeMinicartTemplateFn = jade.compileFileClient('minicartTemplate.jade', {name: "minicartTemplate"});
 
+//create template.js file to store the Jade templates
+fs.writeFile("template.js", productsTemplateFn, function () {
+	//once the products function is written, append the minicart function to the same file
+	fs.appendFile("template.js", jadeMinicartTemplateFn);
+});
+
+//set up function to handle http requests and response for logging activity and errors
 function onRequest (request, response) {
 	var pathname = url.parse(request.url).pathname;
 	console.log("file request from path: " + pathname);

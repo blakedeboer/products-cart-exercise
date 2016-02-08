@@ -4,6 +4,7 @@ var isLoaded = false;
 window.onload = function () {
 	isLoaded = true;
   //notifyOnloadEvent();
+  loadPageContent();
 };
 
 function sendMessage (requestType, url, statusCode, sendObj, callback) {
@@ -34,7 +35,7 @@ function getProducts () {
     if (isLoaded) {
       products = JSON.parse(response.responseText);
 
-      var html = window.jadeTemplate({productsArray: products});
+      var html = window.productsTemplate({productsArray: products});
       var productsContainer = document.getElementById("products-container");
       productsContainer.innerHTML = html;
 
@@ -60,11 +61,18 @@ function postToMiniCart () {
   });
 }
 
-function loadPageContent () {
-  getProducts();
+function getMiniCart () {
+  var minicartHTML = window.minicartTemplate();
+  var minicartContainer = document.getElementById("minicart-container");
+  minicartContainer.innerHTML = minicartHTML;
 }
 
-loadPageContent();
+function loadPageContent () {
+  getProducts();
+  getMiniCart();
+}
+
+
 
 
 
