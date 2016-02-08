@@ -1,18 +1,9 @@
 'use strict';
 
 (function () {
-  var isLoaded = false,
-      products = [];
-
-  window.onload = function () {
-    isLoaded = true;
-    //notifyOnloadEvent();
-    loadPageContent();
-  };
+  /******* HTTP SERVICES ********/
 
   function sendMessage (requestType, url, statusCode, sendObj, callback) {
-    //insert repeated code from all the functions below to make code DRY, 
-    //upon success message, call the callback and pass it the response or responseText
     var httpRequest = new XMLHttpRequest();
 
     httpRequest.onreadystatechange = function () {
@@ -31,83 +22,124 @@
     httpRequest.send(sendObj);
   }
 
-  function getProducts () {
-    sendMessage('GET', 'http://localhost:3000/products', 200, null, function (response) {
-      //TODO check for parsing errors
-
-      if (isLoaded) {
-        var responseArray = JSON.parse(response.responseText);
-
-        products = appendPriceInteger(responseArray);
-
-        var html = window.productsTemplate({productsArray: products});
-        var productsContainer = document.getElementById("products-container");
-        productsContainer.innerHTML = html;
-
-        var buyButtons = document.getElementsByClassName("buy-button");
-        for (var i = 0; i < buyButtons.length; i++) {
-          buyButtons[i].addEventListener("click", function (e) {
-            e.preventDefault();
-            var productObj = getProductObj(this.id);
-            postToMiniCart(productObj);
-          });
-        }
-
-      } else {
-        //subscribeToWindowLoad();
-      }
-    });
+  function getRequest (path, responseCallback) {
+    sendMessage('GET', 'http://localhost:3000/' + path, 200, null, responseCallback);
   }
 
-  function postToMiniCart (productObj) {
-    var sendObj = JSON.stringify({product: productObj});
+  function postRequest (path, sendObj, responseCallback) {
+    sendMessage('POST', 'http://localhost:3000/' + path, 201, sendObj, responseCallback);
+  }
 
-    sendMessage('POST', 'http://localhost:3000/cart_order', 201, sendObj, function (response) {
-      console.log(response.responseText);
-      getMinicart();
-    });
+  function deleteRequest (path, responseCallback) {
+    sendMessage('DELETE', 'http://localhost:3000/' + path, 200, null, responseCallback);
+  }
+
+
+  /**** PRODUCT AND MINICART ACTIONS *******/
+
+  function getProducts () {
+    getRequest('products', onGetProducts);
   }
 
   function getMinicart () {
-    sendMessage('GET', 'http://localhost:3000/cart_order', 200, null, function (response) {
-      var responseText = JSON.parse(response.responseText);
+    getRequest('cart_order', onGetMinicart);
+  }
 
-      var cartTotal = 0;
-      for (var i = 0; i < responseText.length; i++) {
-        cartTotal += +responseText[i].product.priceInt;
-      }
+  function postMiniCart (productObj) {
+    //stringify product object before sending to server
+    var sendObj = JSON.stringify({
+      product: productObj
+    });
+    postRequest('cart_order', sendObj, onMinicartUpdate);
+  }
 
-      var minicartHTML = window.minicartTemplate({
-        cartTotal: cartTotal,
-        productCount: responseText.length,
-        cartProducts: responseText
-      });
-      var minicartContainer = document.getElementById("minicart-container");
-      minicartContainer.innerHTML = minicartHTML;
+  function deleteMinicartProduct (deleteId) {
+    deleteRequest('cart_order/' + deleteId, onMinicartUpdate);
+  }
 
-      var cancelButtons = document.getElementsByClassName("cancel-button");
-      for (var i = 0; i < cancelButtons.length; i++) {
-        cancelButtons[i].addEventListener("click", function (e) {
-          e.preventDefault();
-          deleteProductFromMinicart(this.id);
-        });
-      }
+
+  /******* HTTP RESPONSE HANDLERS ******/
+
+  function onMinicartUpdate (response) {
+    //if minicart is updated, immediately ask for the new minicart from server
+    //upon response to the GET request, the minicart template will be reloaded
+    getMinicart();
+  }
+
+  //upon response from server, prep the products array and then load template
+  function onGetProducts (response) {
+    //TODO check for parsing errors
+    var responseArray = JSON.parse(response.responseText);
+
+    //update products array with additional price properties appended
+    var products = appendPriceInteger(responseArray);
+
+    loadProductsTemplate(products);
+  }
+
+  //upon response from server, prep the minicar object and then load the template
+  function onGetMinicart (response) {
+    var responseText = JSON.parse(response.responseText),
+        cartTotal = 0;
+
+    //calculate new minicart total
+    for (var i = 0; i < responseText.length; i++) {
+      cartTotal += +responseText[i].product.priceInt;
+    } 
+
+    loadMinicartTemplate({
+      cartTotal: cartTotal,
+      productCount: responseText.length,
+      cartProducts: responseText
     });
   }
 
-  function deleteProductFromMinicart (deleteId) {
-    //need to make a function that does these same basic steps for creating a request
-    var url = 'http://localhost:3000/cart_order/' + deleteId.toString();
-    sendMessage('DELETE', url, 200, null, function (response) {
-      console.log(response.statusText);
-      getMinicart();
-    });
+
+  /**** TEMPLATE LOADING ********/
+
+  function loadProductsTemplate (products) {
+    //load Jade template
+    var productsContainer = document.getElementById("products-container");
+    productsContainer.innerHTML = window.productsTemplate({productsArray: products});
+
+    //when a user buys a product, a post request is sent to the minicart with that product
+    function onBuy (event) {
+      event.preventDefault();
+      var productObj = getProductObj(this.id, products);
+      postMiniCart(productObj);
+    }
+
+    //set handler for buy button
+    var buyButtons = document.getElementsByClassName("buy-button");
+    for (var i = 0; i < buyButtons.length; i++) {
+      buyButtons[i].addEventListener("click", onBuy);
+    }
   }
 
-  function getProductObj (id) {
+  function loadMinicartTemplate (minicartObj) {
+    //load Jade template
+    var minicartContainer = document.getElementById("minicart-container");
+    minicartContainer.innerHTML = window.minicartTemplate(minicartObj);
+
+    //when a user clicks cancel, a DELETE request is sent to the server for that product
+    function onCancel (event) {
+      event.preventDefault();
+      deleteMinicartProduct(this.id);
+    }
+    //set handlers for cancel button
+    var cancelButtons = document.getElementsByClassName("cancel-button");
+    for (var i = 0; i < cancelButtons.length; i++) {
+      cancelButtons[i].addEventListener("click", onCancel);
+    }
+  }
+
+
+  /****** HELPER FUNCTIONS ***********/
+
+  function getProductObj (id, productsArray) {
     if (typeof id === "string") id = parseInt(id);
-    for (var i = 0; i < products.length; i++) {
-      if (products[i].id === id) return products[i];
+    for (var i = 0; i < productsArray.length; i++) {
+      if (productsArray[i].id === id) return productsArray[i];
     }
   }
 
@@ -121,11 +153,28 @@
     return productsArray;
   }
 
-  function loadPageContent () {
-    getProducts();
-    getMinicart();
+  
+
+  /***** APPLICATION START *********/
+
+  function getProductsAndMinicart () {
+    //triggers GET request for products, on response, the products template will load
+    //while loading the template, the buy buttons will have click handlers added to process a user buying a product
+    //if a user buys a product, a post request will be sent to the minicart with the product, and the minicart will be udpated via GET request
+    getProducts(); 
+
+    //triggers GET request for the minicart, on response, the minicart template will load
+    //while loading the template, any cancel buttons will have click handlers added to process deleting a product from the minicart
+    //upon successful deletion of the product the minicart will be update via at GET request
+    getMinicart(); 
   }
 
+  //we wait until the window load event to ensure the divs that contain the templates will exist
+  //[note] we could also immediately make the GET requests for products and minicart and set up a subscription to the load
+    //event however for this scale of an app, the server responds almost instantly so it is not worth the extra code
+  window.onload = function () {
+    getProductsAndMinicart();
+  };
 })();
 
 
