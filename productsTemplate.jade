@@ -1,9 +1,14 @@
 - var arr = productsArray
 
-ul
+ul(id="products-list")
 	- for (var i = 0; i < arr.length; i++)
-		li
-			span= arr[i].name
-			button(id="arr[i].id", class="buy-button")
-				|BUY
-
+		li(class="product-listing")
+			h4= arr[i].name
+			div(class="description")
+				p(class="description")= arr[i].description
+				div(class="price")
+					span= "Price: "
+					span= arr[i].price
+			div(class="buy")
+				button(id=arr[i].id,class="buy-button")
+					|BUY
