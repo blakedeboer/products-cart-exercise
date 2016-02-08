@@ -1,7 +1,21 @@
+header(id="cart-header")
+	div(id="cart-title")
+		span(id="cart-title")= "CART"
+	div(id="cart-count")
+		span(id="cart-count")= "2"
+
 - var arr = cartProducts
 
-ul
+ul(id="cart-list") 
 	- for (var i = 0; i < arr.length; i++)
-		li
-			span= arr[i].name
-			button(id=arr[i].id, class="cancel-button")
+		li(class="cart-listing")
+			div(class="product-name")
+				p(class="product-name")= arr[i].product.name
+			div(class="product-price")
+				span(class="product-price")= arr[i].product.price
+			div(class="cancel-section")
+				button(id=arr[i].id, class="cancel-button")
+
+div(id="total-cost-container")
+	span(id="total-title")= "Total: "
+	span(id="total-amount")= "$2,000.00"

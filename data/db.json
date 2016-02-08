@@ -19,5 +19,24 @@
       "price": "$1500"
     }
   ],
-  "cart_order": []
+  "cart_order": [
+    {
+      "id": 1,
+      "product": {
+        "id": 1,
+        "name": "Magical Night-lite",
+        "description": "This one of a kind magical night-lite will not only illuminates your room, but gives you magical dreams that you'll remember forever.",
+        "price": "$1000"
+      }
+    },
+    {
+      "id": 2,
+      "product": {
+        "id": 1,
+        "name": "Magical Night-lite",
+        "description": "This one of a kind magical night-lite will not only illuminates your room, but gives you magical dreams that you'll remember forever.",
+        "price": "$1000"
+      }
+    }
+  ]
 }

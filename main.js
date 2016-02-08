@@ -53,8 +53,8 @@ function getProducts () {
   });
 }
 
-function postToMiniCart () {
-  var sendObj = JSON.stringify({name: "product name"});
+function postToMiniCart (productObj) {
+  var sendObj = JSON.stringify({product: productObj});
 
   sendMessage('POST', 'http://localhost:3000/cart_order', 201, sendObj, function (response) {
     console.log(response.responseText);
