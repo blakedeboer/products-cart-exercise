@@ -72,7 +72,7 @@
     var responseArray = JSON.parse(response.responseText);
 
     //update products array with additional price properties appended
-    var products = appendPriceInteger(responseArray);
+    var products = appendAdditionalPriceProperties(responseArray);
 
     loadProductsTemplate(products);
   }
@@ -84,8 +84,10 @@
 
     //calculate new minicart total
     for (var i = 0; i < responseText.length; i++) {
-      cartTotal += +responseText[i].product.priceInt;
+      cartTotal += +responseText[i].product.intPrice;
     } 
+
+    cartTotal = formatTotalPrice(cartTotal); // ex: "1000" -> "$1,000", for display purpose
 
     loadMinicartTemplate({
       cartTotal: cartTotal,
@@ -143,17 +145,35 @@
     }
   }
 
-  function appendPriceInteger (productsArray) {
+  function numberWithCommas (number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function formatTotalPrice (price) {
+    return "$" + numberWithCommas(price);
+  }
+
+  function appendAdditionalPriceProperties (productsArray) {
     for (var i = 0; i < productsArray.length; i++) {
       var price = productsArray[i].price;
-      if (price.indexOf("$") === 0) {
-        productsArray[i].priceInt = +price.substring(1);  //"$100" -> 100, create new priceInt property as integer and no "$" prefix
-      }     
+
+      //append intPrice property which will be used for calculating the total cost of minicart
+      if (!productsArray[i].intPrice) {
+          if (price.indexOf("$") === 0) {
+            productsArray[i].intPrice = +price.substring(1);  //"$100" -> 100, create new intPrice property as integer and no "$" prefix
+          }    
+      }
+      
+      //append viewPrice property which includes commas in the string
+      if (!productsArray[i].viewPrice) {
+        productsArray[i].viewPrice = numberWithCommas(price); //"$1000" -> "$1,000"
+      }
+
     }
     return productsArray;
   }
 
-  
+
 
   /***** APPLICATION START *********/
 

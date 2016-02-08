@@ -19,5 +19,39 @@
       "price": "$1500"
     }
   ],
-  "cart_order": []
+  "cart_order": [
+    {
+      "product": {
+        "id": 1,
+        "name": "Magical Night-lite",
+        "description": "This one of a kind magical night-lite will not only illuminates your room, but gives you magical dreams that you'll remember forever.",
+        "price": "$1000",
+        "intPrice": 1000,
+        "viewPrice": "$1,000"
+      },
+      "id": 1
+    },
+    {
+      "product": {
+        "id": 2,
+        "name": "Never ending glass of Water",
+        "description": "Tired of running out of water when you sleep? This glass of water is always half-full. And it always stays clean and germ free!",
+        "price": "$2000",
+        "intPrice": 2000,
+        "viewPrice": "$2,000"
+      },
+      "id": 2
+    },
+    {
+      "product": {
+        "id": 2,
+        "name": "Never ending glass of Water",
+        "description": "Tired of running out of water when you sleep? This glass of water is always half-full. And it always stays clean and germ free!",
+        "price": "$2000",
+        "intPrice": 2000,
+        "viewPrice": "$2,000"
+      },
+      "id": 3
+    }
+  ]
 }
