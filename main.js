@@ -29,6 +29,14 @@ httpRequest.onreadystatechange = function (value) {
       var productsContainer = document.getElementById("products-container");
       productsContainer.innerHTML = html;
       console.log("HTML added");
+
+      var buyButtons = document.getElementsByClassName("buy-button");
+      for (var i = 0; i < buyButtons.length; i++) {
+        buyButtons[i].addEventListener("click", function (e) {
+          e.preventDefault();
+          console.log("click");
+        });
+      }
   
   } else {
   	//subsribeToWindowLoad();
