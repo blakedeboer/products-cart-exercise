@@ -1,0 +1,15 @@
+#products-container {
+	  width: auto;
+    height: auto;
+    background: grey;
+    float: left;
+}
+#minicart-container {
+	  width: 300px;
+    height: 400px;
+    background: blue;
+    z-index: 1;
+    position: fixed;
+    right: 10px;
+    top: 40px;
+}
